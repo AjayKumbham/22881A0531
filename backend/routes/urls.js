@@ -3,25 +3,27 @@ const router = express.Router();
 const db = require('../db');
 const { nanoid } = require('nanoid');
 
-// POST /shorturls
+// shorten the url
 router.post('/shorturls', (req, res) => {
   const { url, shortcode } = req.body;
 
-  // Validate url
+  // Validate  the url
   try {
     new URL(url);
   } catch {
-    return res.status(400).json({ error: 'url is required and must be a valid URL' });
+    return res.status(400).json({ error: 'url is required and must be a valid' });
   }
 
-  // Helper to insert URL
+  // insert the url
   const insertUrl = (shortId) => {
     db.run(
       'INSERT INTO urls (shortId, originalUrl) VALUES (?, ?)',
       [shortId, url],
       function (err) {
         if (err) {
+          Log()
           return res.status(500).json({ error: 'Failed to insert' });
+
         }
         res.status(201).json({ shortLink: `http://localhost:3000/${shortId}` });
       }
@@ -58,7 +60,7 @@ router.post('/shorturls', (req, res) => {
   }
 });
 
-// GET /:shortId
+
 router.get('/:shortId', (req, res) => {
   const { shortId } = req.params;
 
